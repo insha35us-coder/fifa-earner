@@ -1,0 +1,30 @@
+name: Fetch Real Amazon Products
+
+on:
+  schedule:
+    - cron: '0 * * * *'   # Runs every hour
+  workflow_dispatch:        # Allows you to run it manually from GitHub
+
+jobs:
+  update_products:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install requests
+        run: pip install requests
+
+      - name: Run fetcher script
+        run: python fetch_products.py
+
+      - name: Commit and push if changed
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "🤖 Updated with real Amazon best-sellers"
+          file_pattern: products.json
